@@ -32,19 +32,19 @@ def freefall(vx, x, vy, y):
 
 # 定义碰撞边界时的运动
 def bouncewall(vx, x, vy, y):
-    # 判断球1撞地
+    # 判断球撞地
     if y - radius < 0:
         y = radius
         vy = -vy * factor
-    # 判断球2撞天花板
+    # 判断球撞天花板
     elif y + radius > ymax:
         y = ymax - radius
         vy = -vy * factor
-    # 判断球1撞右墙
+    # 判断球撞右墙
     if x + radius > xmax:
         x = xmax - radius
         vx = -vx * factor
-    # 判断球1撞左墙
+    # 判断球撞左墙
     elif x - radius < 0:
         x = radius
         vx = -vx * factor
@@ -80,27 +80,17 @@ def update(index):
 
     # 判断是否触及边界
     for i in range(len(p)):
-        if p[i][3] - radius < 0 or p[i][3] + radius > ymax or p[i][1] + radius > xmax or p[i][1] - radius < 0:
             p[i] = bouncewall(p[i][0], p[i][1], p[i][2], p[i][3])
 
     # 判断两小球相撞
     for i in range(len(p)):
         for j in range(i + 1, len(p)):
             if (p[i][1] - p[j][1]) ** 2 + (p[i][3] - p[j][3]) ** 2 < 4 * radius ** 2:
-                # p[i][1], p[j][1], p[i][3], p[j][3] = p[i][1], p[j][1], p[i][3], p[j][3]
                 p[i], p[j] = bounceeachother(p[i][0], p[i][1], p[i][2], p[i][3], p[j][0], p[j][1], p[j][2], p[j][3])
 
     # 循环定义各球的位置
     for i in range(len(p)):
         exec('ball%s.set_center((p[i][1], p[i][3]))' % str(i+1))
-    # ball1.set_center((p[0][1], p[0][3]))
-    # ball2.set_center((p[1][1], p[1][3]))
-    # ball3.set_center((p[2][1], p[2][3]))
-    # ball4.set_center((p[3][1], p[3][3]))
-    # ball5.set_center((p[4][1], p[4][3]))
-    # ball6.set_center((p[5][1], p[5][3]))
-    # ball7.set_center((p[6][1], p[6][3]))
-    # ball8.set_center((p[7][1], p[7][3]))
 
     return ball1, ball2, ball3, ball4, ball5, ball6, ball7, ball8
 
@@ -111,6 +101,8 @@ fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.set_xlim(0, xmax)
 ax.set_ylim(0, ymax)
+ax.set_title("bounce ball")
+ax.text(1,8,'factor=%.2f'%factor)
 
 # 设置球
 ball1 = plt.Circle((x1, y1), radius, fc='red')
