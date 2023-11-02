@@ -101,7 +101,7 @@ fig, ax = plt.subplots()
 ax.set_aspect('equal')
 ax.set_xlim(0, xmax)
 ax.set_ylim(0, ymax)
-ax.set_title("bounce ball")
+ax.set_title("bouncing balls")
 ax.text(1,8,'factor=%.2f'%factor)
 
 # 设置球
