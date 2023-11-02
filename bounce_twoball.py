@@ -103,6 +103,5 @@ anim = animation.FuncAnimation(fig, update, frames=200, blit=True, interval=5)
 # anim.save('bounce_ball.gif', writer=FFwriter)
 
 # Show the animation
-
 plt.show()
 
