@@ -1,9 +1,10 @@
+"八个球在给定二维区域内受重力影响下的运动，球与球之间取完全弹性碰撞，球与边界的碰撞受碰撞系数影响"
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 g = -9.81  # m/s^2
 dt = 0.01  # 取的小时间微元
-factor = 0.98  # 碰撞系数
+factor = 0.95  # 碰撞系数
 radius = 0.5  # 半径
 # xmin=0
 # ymin=0 编写过程中默认取0
@@ -20,7 +21,8 @@ vx7, x7, vy7, y7 = 7, 6, 0, 8
 vx8, x8, vy8, y8 = 3, 8, 0, 8
 p = [[vx1, x1, vy1, y1], [vx2, x2, vy2, y2], [vx3, x3, vy3, y3], [vx4, x4, vy4, y4], [vx5, x5, vy5, y5],
      [vx6, x6, vy6, y6], [vx7, x7, vy7, y7], [vx8, x8, vy8, y8]]
-
+xc=0
+yc=0
 
 # 定义自由落体函数
 def freefall(vx, x, vy, y):
@@ -73,14 +75,16 @@ def bounceeachother(vbx1, xb1, vby1, yb1, vbx2, xb2, vby2, yb2):
 
 
 def update(index):
-    global p
+    global p,xc,yc
     # 自由落体
+    xc = 0
+    yc = 0
     for i in range(len(p)):
         p[i] = freefall(p[i][0], p[i][1], p[i][2], p[i][3])
 
     # 判断是否触及边界
     for i in range(len(p)):
-            p[i] = bouncewall(p[i][0], p[i][1], p[i][2], p[i][3])
+        p[i] = bouncewall(p[i][0], p[i][1], p[i][2], p[i][3])
 
     # 判断两小球相撞
     for i in range(len(p)):
@@ -91,8 +95,12 @@ def update(index):
     # 循环定义各球的位置
     for i in range(len(p)):
         exec('ball%s.set_center((p[i][1], p[i][3]))' % str(i+1))
-
-    return ball1, ball2, ball3, ball4, ball5, ball6, ball7, ball8
+    
+    for i in range(len(p)):
+        xc=xc+p[i][1]/8
+        yc=yc+p[i][3]/8
+    text.set_text('centre of mass:%.4f %.4f'%(xc,yc))
+    return ball1, ball2, ball3, ball4, ball5, ball6, ball7, ball8,text
 
 
 # 建立图形，设置横纵轴范围，要求横纵轴等长
@@ -103,7 +111,7 @@ ax.set_xlim(0, xmax)
 ax.set_ylim(0, ymax)
 ax.set_title("bouncing balls")
 ax.text(1,8,'factor=%.2f'%factor)
-
+text=plt.text(1,2,'centre of mass:%.4f %.4f'%(xc,yc),alpha=0.5)
 # 设置球
 ball1 = plt.Circle((x1, y1), radius, fc='red')
 ax.add_patch(ball1)
@@ -121,6 +129,7 @@ ball7 = plt.Circle((x7, y7), radius, fc='brown')
 ax.add_patch(ball7)
 ball8 = plt.Circle((x8, y8), radius, fc='black')
 ax.add_patch(ball8)
+
 
 anim = animation.FuncAnimation(fig, update, frames=200, blit=True, interval=5)
 plt.show()
