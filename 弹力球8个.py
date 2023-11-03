@@ -99,8 +99,9 @@ def update(index):
     for i in range(len(p)):
         xc=xc+p[i][1]/8
         yc=yc+p[i][3]/8
+    center.set_center((xc, yc))
     text.set_text('centre of mass:%.4f %.4f'%(xc,yc))
-    return ball1, ball2, ball3, ball4, ball5, ball6, ball7, ball8,text
+    return ball1, ball2, ball3, ball4, ball5, ball6, ball7, ball8,text,center
 
 
 # 建立图形，设置横纵轴范围，要求横纵轴等长
@@ -129,7 +130,8 @@ ball7 = plt.Circle((x7, y7), radius, fc='brown')
 ax.add_patch(ball7)
 ball8 = plt.Circle((x8, y8), radius, fc='black')
 ax.add_patch(ball8)
-
+center = plt.Circle((xc, yc), 0.1, fc='black')
+ax.add_patch(center)
 
 anim = animation.FuncAnimation(fig, update, frames=200, blit=True, interval=5)
 plt.show()
