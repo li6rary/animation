@@ -4,7 +4,7 @@ import matplotlib.animation as animation
 
 g = -9.81  # m/s^2
 dt = 0.01  # 取的小时间微元
-factor = 0.95  # 碰撞系数
+factor = 0.85  # 碰撞系数
 radius = 0.5  # 半径
 # xmin=0
 # ymin=0 编写过程中默认取0
@@ -130,6 +130,7 @@ ball7 = plt.Circle((x7, y7), radius, fc='brown')
 ax.add_patch(ball7)
 ball8 = plt.Circle((x8, y8), radius, fc='black')
 ax.add_patch(ball8)
+# 设置质心
 center = plt.Circle((xc, yc), 0.1, fc='black')
 ax.add_patch(center)
 
