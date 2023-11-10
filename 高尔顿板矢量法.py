@@ -7,7 +7,7 @@ import random
 radius = 0.6  # 小球半径
 ballnum = 100  # 小球数量
 g = -9.81  # m/s^2
-dt = 0.02  # 取的小时间微元
+dt = 0.01  # 取的小时间微元
 # 设置xy轴范围
 xmin = -32
 ymin = -44
@@ -17,11 +17,11 @@ xmax = 32
 rnail = 0.2  # 钉子的半径
 dx = 4.8  # 横向间距
 dy = 2.5  # 纵向间距
-cn = 12  # 层数
+cn = 14  # 层数
 # 定义侧板位置
 sx, sy = 2, 33
 # 定义各碰撞系数
-factor = 0.1  # 与边界的碰撞系数
+factor = 0.2  # 与边界的碰撞系数
 railfactor = 0.8  # 与钉子碰撞的碰撞系数
 funnelfactor = 0.8  # 与漏斗碰撞的碰撞系数
 parfactor = 0.5  # 与下方隔板的碰撞系数
@@ -44,10 +44,12 @@ class Nail:
         self.r = np.array(r)
 
 
+# 获取特定向量的垂直向量
 def getvertical_vector(vec):
     return np.array([vec[1], -vec[0]])
 
 
+# 自由落体
 def freefall(ball):
     tb = ball
     for i in range(ballnum):
@@ -57,6 +59,7 @@ def freefall(ball):
     return tb
 
 
+# 碰撞边界
 def bouncewall(ball):
     tb = ball
     for i in range(ballnum):
@@ -82,47 +85,53 @@ def bouncefunnel(ball):
     for i in range(ballnum):
         if b1[i].r[0] + b1[i].r[1] < -sx + 1.414 * radius and b1[i].r[0] < -sx + radius / 1.414 and \
                 b1[i].r[1] > radius / 1.414:
+            en = np.array([1/1.414, 1/1.414])
+            ef = getvertical_vector(en)
             xf = 1.414 * radius - sx - b1[i].r[1]
             yf = 1.414 * radius - sx - b1[i].r[0]
             b1[i].r[0] = xf
             b1[i].r[1] = yf
-            vxf = -b1[i].v[1]
-            vyf = -b1[i].v[0]
-            b1[i].v[0] = funnelfactor * vxf
-            b1[i].v[1] = funnelfactor * vyf
+            vf1 = ef * np.dot(b1[i].v, ef)
+            vn1 = en * np.dot(b1[i].v, en)
+            b1[i].v = vf1 - funnelfactor * vn1
+
         # 判断碰到右侧上壁
         elif b1[i].r[1] - b1[i].r[0] < -sx + 1.414 * radius and b1[i].r[0] > sx - radius / 1.414 and \
                 b1[i].r[1] > radius / 1.414:
+            en = np.array([-1 / 1.414, 1 / 1.414])
+            ef = getvertical_vector(en)
             xf = -1.414 * radius + sx + b1[i].r[1]
             yf = 1.414 * radius - sx + b1[i].r[0]
             b1[i].r[0] = xf
             b1[i].r[1] = yf
-            vxf = b1[i].v[1]
-            vyf = b1[i].v[0]
-            b1[i].v[0] = funnelfactor * vxf
-            b1[i].v[1] = funnelfactor * vyf
+            vf1 = ef * np.dot(b1[i].v, ef)
+            vn1 = en * np.dot(b1[i].v, en)
+            b1[i].v = vf1 - funnelfactor * vn1
         # 判断碰到左侧下壁
         elif b1[i].r[1] - b1[i].r[0] > sx - 1.414 * radius and b1[i].r[0] < -sx + radius / 1.414 and \
                 b1[i].r[1] < -radius / 1.414:
+            en = np.array([1 / 1.414, -1 / 1.414])
+            ef = getvertical_vector(en)
             xf = 1.414 * radius - sx + b1[i].r[1]
             yf = -1.414 * radius + sx + b1[i].r[0]
             b1[i].r[0] = xf
             b1[i].r[1] = yf
-            vxf = b1[i].v[1]
-            vyf = b1[i].v[0]
-            b1[i].v[0] = funnelfactor * vxf
-            b1[i].v[1] = funnelfactor * vyf
+            vf1 = ef * np.dot(b1[i].v, ef)
+            vn1 = en * np.dot(b1[i].v, en)
+            b1[i].v = vf1 - funnelfactor * vn1
+
         # 判断碰到右侧下壁
         elif b1[i].r[0] + b1[i].r[1] > sx - 1.414 * radius and b1[i].r[0] > sx - radius / 1.414 and \
                 b1[i].r[1] < -radius / 1.414:
+            en = np.array([-1 / 1.414, -1 / 1.414])
+            ef = getvertical_vector(en)
             xf = -1.414 * radius + sx - b1[i].r[1]
             yf = -1.414 * radius + sx - b1[i].r[0]
             b1[i].r[0] = xf
             b1[i].r[1] = yf
-            vxf = -b1[i].v[1]
-            vyf = -b1[i].v[0]
-            b1[i].v[0] = funnelfactor * vxf
-            b1[i].v[1] = funnelfactor * vyf
+            vf1 = ef * np.dot(b1[i].v, ef)
+            vn1 = en * np.dot(b1[i].v, en)
+            b1[i].v = vf1 - funnelfactor * vn1
     return b1
 
 
@@ -226,8 +235,8 @@ ax.add_line(line3)
 line4 = Line2D([-sx, -sy], [0, -(sy - sx)], linewidth=2, color='black')
 ax.add_line(line4)
 # 绘制下方隔板
-for i in range(cn):
-    exec("gline%d = Line2D([dx*i-dx*(cn-1)/2, dx*i-dx*(cn-1)/2], [ymin, -dy*(cn-1)-2], color='black')" % (i + 1))
+for i in range(cn+1):
+    exec("gline%d = Line2D([dx*i-dx*(cn)/2, dx*i-dx*(cn)/2], [ymin, -dy*(cn-1)-2], color='black')" % (i + 1))
     eval('ax.add_line(gline%d)' % (i + 1))
 # 绘制各小球
 colorlist = ['red', 'green', 'blue', 'orange', 'pink', 'yellow', 'brown', 'black']
